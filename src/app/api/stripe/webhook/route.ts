@@ -12,9 +12,11 @@ export const config = { api: { bodyParser: false } };
 
 export async function POST(req: Request) {
   const rawBody = await req.arrayBuffer();
-    const sig = req.headers.get("stripe-signature");
+  const sig = req.headers.get("stripe-signature");
 
-  const secret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim()!;
+  console.log("Using webhook secret:", `"${secret}"`);
+
   let event: Stripe.Event;
 
   try {
@@ -44,7 +46,7 @@ export async function POST(req: Request) {
           session.id,
           {
             expand: ["line_items.data.price"],
-          },
+          }
         );
         const priceId =
           sessionWithLineItems.line_items?.data?.[0]?.price?.id || "";
@@ -98,7 +100,7 @@ export async function POST(req: Request) {
           session.customer_email || "User",
           session.customer_email || "unknown@example.com",
           plan.name,
-          (session.amount_total || 0) / 100,
+          (session.amount_total || 0) / 100
         );
 
         break;
