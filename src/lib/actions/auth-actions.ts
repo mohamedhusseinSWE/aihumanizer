@@ -16,10 +16,10 @@ async function verifyCaptcha(captchaToken: string) {
     {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(
-        captchaToken,
-      )}`,
-    },
+      body: `secret=${encodeURIComponent(
+        secretKey
+      )}&response=${encodeURIComponent(captchaToken)}`,
+    }
   );
 
   const data = await response.json();
@@ -30,7 +30,7 @@ export const signUp = async (
   email: string,
   password: string,
   name: string,
-  captchaToken: string,
+  captchaToken: string
 ) => {
   // ✅ تحقق من الكابتشا
   const isValid = await verifyCaptcha(captchaToken);
@@ -81,7 +81,7 @@ export const signUp = async (
 export const signIn = async (
   email: string,
   password: string,
-  captchaToken: string,
+  captchaToken: string
 ) => {
   // ✅ تحقق من الكابتشا
   const isValid = await verifyCaptcha(captchaToken);
@@ -125,7 +125,7 @@ export const signInSocial = async (provider: "google") => {
   const { url } = await auth.api.signInSocial({
     body: {
       provider,
-      callbackURL: "/dashboard",
+      callbackURL: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
     },
   });
 
