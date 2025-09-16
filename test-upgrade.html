@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Plan Upgrade</title>
+  </head>
+  <body>
+    <h1>Test Plan Upgrade</h1>
+    <button onclick="upgradePlan()">Upgrade User to Pro Plan</button>
+    <div id="result"></div>
+
+    <script>
+      async function upgradePlan() {
+        try {
+          const response = await fetch("/api/test-upgrade", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: "rX38N1DFFLwOwX6iyKPn0Lt2TblheIK9",
+              planId: 1,
+            }),
+          });
+
+          const data = await response.json();
+          document.getElementById("result").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+        } catch (error) {
+          document.getElementById("result").innerHTML =
+            "Error: " + error.message;
+        }
+      }
+    </script>
+  </body>
+</html>

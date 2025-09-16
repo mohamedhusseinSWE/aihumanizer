@@ -1,0 +1,244 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+   id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  payments      Payment[]       // back-relation for Payment
+  plans         Plan[]          // back-relation for Plan (many-to-many)
+  planId   Int?
+  subscriptions Subscription[]  // back-relation for Subscription
+  humanizationJobs HumanizationJob[] // back-relation
+  coupons  Coupon[]
+  subscriptionId     String?   @unique // Stripe subscription ID
+  subscriptionStatus String    @default("free") // "free", "active", "canceled", "expired"
+  planName           String    @default("free") // "free", "unlimted", "lifetime"
+  
+  // Affiliate fields
+  affiliateId        String?   @unique // User's affiliate ID
+  referralCode       String?   @unique // User's referral code
+  referredBy         String?   // Who referred this user
+  referredByUser     User?     @relation("UserReferrals", fields: [referredBy], references: [id])
+  referredUsers      User[]    @relation("UserReferrals")
+  affiliateCommissions AffiliateCommission[] // Commissions earned
+  referredCommissions AffiliateCommission[] @relation("ReferredUserCommissions") // Commissions from referrals
+  
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+
+model Admin {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  password   String
+  role       String @default("admin")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("admins")  
+}
+model Payment {
+  id                Int      @id @default(autoincrement())
+  amount            Decimal  @db.Decimal(10, 2)
+  status            String
+  stripe_payment_id String?
+  price_id          String?
+  user_email        String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+
+
+model Plan {
+  id                  Int      @id @default(autoincrement())
+  name                String   @unique
+  description         String?
+  features            String?
+  interval            String    // "monthly" | "yearly"
+  price               Float
+  priceId             String?
+  wordLimitPerRequest Int
+  wordsPerMonth       Int
+  status              PlanStatus @default(ACTIVE)
+  models              String[]
+  isPopular           Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  users               User[]
+  subscriptions       Subscription[]
+  coupons             Coupon[]  // relation to coupons
+}
+
+
+model Subscription {
+  id             Int      @id @default(autoincrement())
+  stripeSubId    String   @unique
+  user           User       @relation(fields: [userId], references: [id])
+  userId         String
+  plan           Plan     @relation(fields: [planId], references: [id])
+  planId         Int
+  status         String   // "active" | "canceled" | "past_due" etc.
+  interval       String   // "monthly" | "yearly"
+  startDate      DateTime
+  endDate        DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Affiliate tracking
+  affiliateCommission Decimal? @db.Decimal(10, 2) // Commission amount
+  affiliateTrackingId String? // External tracking ID
+  referralCode        String? // Referral code used
+  affiliateCommissions AffiliateCommission[] // Related commissions
+
+  @@map("subscriptions")
+}
+
+model HumanizationJob {
+  id            Int       @id @default(autoincrement())
+  userId        String
+  inputText     String     // النص الـ AI الأصلي
+  outputText    String?    // النص بعد التحويل للبشري
+  wordCount     Int
+  status        JobStatus  @default(PENDING)
+  createdAt     DateTime   @default(now())
+  completedAt   DateTime?
+
+  user          User       @relation(fields: [userId], references: [id])
+}
+
+
+model Campaign {
+  id        Int      @id @default(autoincrement())
+  name      String
+  coupons   Coupon[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coupon {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  campaignId Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  planId     Int
+  plan       Plan     @relation(fields: [planId], references: [id])
+  userId     String?  // Nullable until the coupon is redeemed
+  user       User?    @relation(fields: [userId], references: [id])
+  isUsed     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+
+
+model AffiliateCommission {
+  id            Int      @id @default(autoincrement())
+  affiliateId   String   // User who earned the commission
+  affiliate     User     @relation(fields: [affiliateId], references: [id])
+  referredUserId String   // User who was referred
+  referredUser  User     @relation("ReferredUserCommissions", fields: [referredUserId], references: [id])
+  subscriptionId Int?     // Related subscription
+  subscription  Subscription? @relation(fields: [subscriptionId], references: [id])
+  amount        Decimal  @db.Decimal(10, 2) // Commission amount
+  percentage    Decimal  @db.Decimal(5, 2) // Commission percentage
+  status        CommissionStatus @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("affiliate_commissions")
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PlanStatus {
+  ACTIVE
+  HIDDEN
+  DISABLED
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+}

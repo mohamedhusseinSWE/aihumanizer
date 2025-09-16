@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Campaign System</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        padding: 10px 20px;
+        margin: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .result {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      .success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 Test Campaign System</h1>
+
+      <div class="grid">
+        <div>
+          <h3>📋 Test Plans API</h3>
+          <button onclick="testPlans()">Test Plans Endpoint</button>
+          <div id="plansResult"></div>
+        </div>
+
+        <div>
+          <h3>🎯 Test Campaigns API</h3>
+          <button onclick="testCampaigns()">Test Campaigns Endpoint</button>
+          <div id="campaignsResult"></div>
+        </div>
+      </div>
+
+      <div>
+        <h3>🔧 Test Campaign Creation</h3>
+        <div
+          style="
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 10px 0;
+          "
+        >
+          <input
+            type="text"
+            id="campaignName"
+            placeholder="Campaign Name"
+            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px"
+          />
+          <input
+            type="number"
+            id="couponCount"
+            placeholder="Coupon Count"
+            value="10"
+            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px"
+          />
+          <select
+            id="planSelect"
+            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px"
+          >
+            <option value="">Select Plan...</option>
+          </select>
+          <button onclick="testCreateCampaign()">Create Campaign</button>
+        </div>
+        <div id="createResult"></div>
+      </div>
+    </div>
+
+    <script>
+      async function testPlans() {
+        try {
+          document.getElementById("plansResult").innerHTML =
+            '<div class="result info">🔄 Testing plans endpoint...</div>';
+
+          const response = await fetch("/api/admin/plans");
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("plansResult").innerHTML = `
+                        <div class="result success">
+                            <h4>✅ Plans API Working!</h4>
+                            <pre>${JSON.stringify(data.plans, null, 2)}</pre>
+                        </div>
+                    `;
+
+            // Populate plan select
+            const planSelect = document.getElementById("planSelect");
+            planSelect.innerHTML = '<option value="">Select Plan...</option>';
+            data.plans.forEach((plan) => {
+              const option = document.createElement("option");
+              option.value = plan.id;
+              option.textContent = `${plan.name} - $${plan.price} (${plan.interval})`;
+              planSelect.appendChild(option);
+            });
+          } else {
+            document.getElementById("plansResult").innerHTML = `
+                        <div class="result error">
+                            <h4>❌ Plans API Error:</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("plansResult").innerHTML = `
+                    <div class="result error">
+                        <h4>❌ Error:</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function testCampaigns() {
+        try {
+          document.getElementById("campaignsResult").innerHTML =
+            '<div class="result info">🔄 Testing campaigns endpoint...</div>';
+
+          const response = await fetch("/api/admin/campaigns/create");
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("campaignsResult").innerHTML = `
+                        <div class="result success">
+                            <h4>✅ Campaigns API Working!</h4>
+                            <pre>${JSON.stringify(data.campaigns, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("campaignsResult").innerHTML = `
+                        <div class="result error">
+                            <h4>❌ Campaigns API Error:</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("campaignsResult").innerHTML = `
+                    <div class="result error">
+                        <h4>❌ Error:</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function testCreateCampaign() {
+        const name = document.getElementById("campaignName").value;
+        const count = document.getElementById("couponCount").value;
+        const planId = document.getElementById("planSelect").value;
+
+        if (!name || !count || !planId) {
+          document.getElementById("createResult").innerHTML = `
+                    <div class="result error">
+                        <h4>❌ Error:</h4>
+                        <p>Please fill in all fields</p>
+                    </div>
+                `;
+          return;
+        }
+
+        try {
+          document.getElementById("createResult").innerHTML =
+            '<div class="result info">🔄 Creating campaign...</div>';
+
+          const response = await fetch("/api/admin/campaigns/create", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: name,
+              couponCount: parseInt(count),
+              planId: parseInt(planId),
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("createResult").innerHTML = `
+                        <div class="result success">
+                            <h4>✅ Campaign Created Successfully!</h4>
+                            <pre>${JSON.stringify(data.campaign, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("createResult").innerHTML = `
+                        <div class="result error">
+                            <h4>❌ Campaign Creation Error:</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("createResult").innerHTML = `
+                    <div class="result error">
+                        <h4>❌ Error:</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      // Load plans on page load
+      window.onload = function () {
+        testPlans();
+      };
+    </script>
+  </body>
+</html>

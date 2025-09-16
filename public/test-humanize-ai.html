@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Humanize AI Component</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .test-section {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .button {
+        background: #374151;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      .button:hover {
+        background: #1f2937;
+      }
+      .result {
+        background: #f3f4f6;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 6px;
+        border-left: 4px solid #10b981;
+      }
+      .error {
+        border-left-color: #ef4444;
+        background: #fef2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Humanize AI Component</h1>
+
+    <div class="test-section">
+      <h2>Test User Profile API</h2>
+      <button class="button" onclick="testUserProfile()">
+        Test User Profile
+      </button>
+      <div id="profileResult" class="result" style="display: none"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test Stripe Checkout (Pro Plan)</h2>
+      <button class="button" onclick="testStripeCheckout()">
+        Test Stripe Checkout
+      </button>
+      <div id="checkoutResult" class="result" style="display: none"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test Plans API</h2>
+      <button class="button" onclick="testPlans()">Test Plans</button>
+      <div id="plansResult" class="result" style="display: none"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test Navigation Event</h2>
+      <button class="button" onclick="testNavigation()">
+        Test Settings Navigation
+      </button>
+      <div id="navigationResult" class="result" style="display: none"></div>
+    </div>
+
+    <script>
+      async function testUserProfile() {
+        const resultDiv = document.getElementById("profileResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Testing user profile...";
+
+        try {
+          const response = await fetch("/api/user/profile");
+          const data = await response.json();
+
+          if (data.success) {
+            resultDiv.innerHTML = `
+                        <h3>✅ User Profile Success</h3>
+                        <p><strong>User ID:</strong> ${data.user.id}</p>
+                        <p><strong>Email:</strong> ${data.user.email}</p>
+                        <p><strong>Plan ID:</strong> ${data.user.planId || "null"}</p>
+                        <p><strong>Plan Name:</strong> ${data.user.planName || "null"}</p>
+                        <p><strong>Subscription Status:</strong> ${data.user.subscriptionStatus || "null"}</p>
+                    `;
+          } else {
+            resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${data.message}</p>`;
+            resultDiv.className = "result error";
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${error.message}</p>`;
+          resultDiv.className = "result error";
+        }
+      }
+
+      async function testStripeCheckout() {
+        const resultDiv = document.getElementById("checkoutResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Testing Stripe checkout...";
+
+        try {
+          const response = await fetch("/api/stripe/checkout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              planId: 1,
+              planName: "Pro",
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.url) {
+            resultDiv.innerHTML = `
+                        <h3>✅ Stripe Checkout Success</h3>
+                        <p><strong>Checkout URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        <p><strong>Session ID:</strong> ${data.sessionId}</p>
+                    `;
+          } else {
+            resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${data.message || "No URL returned"}</p>`;
+            resultDiv.className = "result error";
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${error.message}</p>`;
+          resultDiv.className = "result error";
+        }
+      }
+
+      async function testPlans() {
+        const resultDiv = document.getElementById("plansResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Testing plans...";
+
+        try {
+          const response = await fetch("/api/admin/plans");
+          const data = await response.json();
+
+          if (data.success) {
+            resultDiv.innerHTML = `
+                        <h3>✅ Plans Success</h3>
+                        <p><strong>Total Plans:</strong> ${data.plans.length}</p>
+                        ${data.plans
+                          .map(
+                            (plan) => `
+                            <div style="margin: 10px 0; padding: 10px; background: #f9fafb; border-radius: 4px;">
+                                <strong>${plan.name}</strong> - $${plan.price}/${plan.interval}
+                                <br><small>ID: ${plan.id} | Popular: ${plan.isPopular ? "Yes" : "No"}</small>
+                            </div>
+                        `,
+                          )
+                          .join("")}
+                    `;
+          } else {
+            resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${data.message}</p>`;
+            resultDiv.className = "result error";
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${error.message}</p>`;
+          resultDiv.className = "result error";
+        }
+      }
+
+      function testNavigation() {
+        const resultDiv = document.getElementById("navigationResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Testing navigation event...";
+
+        // Listen for the custom event
+        const handleNavigateToSettings = () => {
+          resultDiv.innerHTML = `
+                    <h3>✅ Navigation Event Success</h3>
+                    <p>Custom event 'navigateToSettings' was triggered successfully!</p>
+                    <p>This would normally switch to the settings page in the dashboard.</p>
+                `;
+        };
+
+        window.addEventListener("navigateToSettings", handleNavigateToSettings);
+
+        // Trigger the event
+        window.dispatchEvent(new CustomEvent("navigateToSettings"));
+
+        // Clean up
+        setTimeout(() => {
+          window.removeEventListener(
+            "navigateToSettings",
+            handleNavigateToSettings,
+          );
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>

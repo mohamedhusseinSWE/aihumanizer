@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Profile API</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .result {
+        background: #f5f5f5;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Profile API</h1>
+
+    <button onclick="testProfile()">Test Profile API</button>
+    <button onclick="testPlans()">Test Plans API</button>
+
+    <div id="result" class="result" style="display: none">
+      <h3>Result:</h3>
+      <pre id="resultContent"></pre>
+    </div>
+
+    <script>
+      async function testProfile() {
+        try {
+          const response = await fetch("/api/user/profile");
+          const data = await response.json();
+
+          document.getElementById("result").style.display = "block";
+          document.getElementById("resultContent").textContent = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+        } catch (error) {
+          document.getElementById("result").style.display = "block";
+          document.getElementById("resultContent").textContent =
+            "Error: " + error.message;
+        }
+      }
+
+      async function testPlans() {
+        try {
+          const response = await fetch("/api/admin/plans");
+          const data = await response.json();
+
+          document.getElementById("result").style.display = "block";
+          document.getElementById("resultContent").textContent = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+        } catch (error) {
+          document.getElementById("result").style.display = "block";
+          document.getElementById("resultContent").textContent =
+            "Error: " + error.message;
+        }
+      }
+    </script>
+  </body>
+</html>

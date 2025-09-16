@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Fix Subscription - Update Database</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .result {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+      .success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Fix Subscription Database</h1>
+    <p>
+      This will update your user's subscription data in the database
+      immediately.
+    </p>
+
+    <button onclick="fixSubscription()">
+      Fix User Subscription (rX38N1DFFLwOwX6iyKPn0Lt2TblheIK9)
+    </button>
+    <button onclick="checkCurrentState()">Check Current Database State</button>
+    <button onclick="fixAllUsers()">Fix All Users to Free Plan</button>
+
+    <div id="result"></div>
+
+    <script>
+      async function fixSubscription() {
+        try {
+          document.getElementById("result").innerHTML =
+            '<div class="result">🔄 Fixing subscription...</div>';
+
+          const response = await fetch("/api/fix-subscription", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: "rX38N1DFFLwOwX6iyKPn0Lt2TblheIK9",
+              planId: 1,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("result").innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Subscription Fixed Successfully!</h3>
+                            <h4>Updated User:</h4>
+                            <pre>${JSON.stringify(data.updatedUser, null, 2)}</pre>
+                            <h4>All Users:</h4>
+                            <pre>${JSON.stringify(data.allUsers, null, 2)}</pre>
+                            <h4>Stats:</h4>
+                            <pre>${JSON.stringify(data.stats, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("result").innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error:</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function checkCurrentState() {
+        try {
+          document.getElementById("result").innerHTML =
+            '<div class="result">🔄 Checking current state...</div>';
+
+          const response = await fetch("/api/fix-subscription");
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("result").innerHTML = `
+                        <div class="result">
+                            <h3>📊 Current Database State:</h3>
+                            <h4>Users:</h4>
+                            <pre>${JSON.stringify(data.users, null, 2)}</pre>
+                            <h4>Plans:</h4>
+                            <pre>${JSON.stringify(data.plans, null, 2)}</pre>
+                            <h4>Subscriptions:</h4>
+                            <pre>${JSON.stringify(data.subscriptions, null, 2)}</pre>
+                            <h4>Stats:</h4>
+                            <pre>${JSON.stringify(data.stats, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("result").innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error:</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function fixAllUsers() {
+        try {
+          document.getElementById("result").innerHTML =
+            '<div class="result">🔄 Fixing all users...</div>';
+
+          // This would need a separate endpoint to fix all users
+          document.getElementById("result").innerHTML = `
+                    <div class="result">
+                        <h3>ℹ️ To fix all users, you would need to call the fix-subscription endpoint for each user individually.</h3>
+                        <p>Or create a separate endpoint to update all users at once.</p>
+                    </div>
+                `;
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+    </script>
+  </body>
+</html>

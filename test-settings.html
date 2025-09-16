@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Settings Component</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .test-button {
+        background: #8b5cf6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      .test-button:hover {
+        background: #7c3aed;
+      }
+      .result {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f0f0f0;
+        border-radius: 5px;
+        white-space: pre-wrap;
+      }
+      .error {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .success {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Settings Component Test</h1>
+      <p>This page tests the Settings component and related APIs.</p>
+
+      <div class="test-section">
+        <h3>1. Test User Profile API</h3>
+        <button class="test-button" onclick="testUserProfile()">
+          Test /api/user/profile
+        </button>
+        <div id="profile-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>2. Test User Coupons API</h3>
+        <button class="test-button" onclick="testUserCoupons()">
+          Test /api/user/coupons
+        </button>
+        <div id="coupons-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>3. Test Plans API</h3>
+        <button class="test-button" onclick="testPlans()">
+          Test /api/admin/plans
+        </button>
+        <div id="plans-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>4. Test Settings Page Navigation</h3>
+        <button class="test-button" onclick="testSettingsNavigation()">
+          Open Dashboard Settings
+        </button>
+        <div id="navigation-result" class="result"></div>
+      </div>
+    </div>
+
+    <script>
+      async function testUserProfile() {
+        const resultDiv = document.getElementById("profile-result");
+        resultDiv.textContent = "Testing...";
+
+        try {
+          const response = await fetch("/api/user/profile");
+          const data = await response.json();
+
+          if (data.success) {
+            resultDiv.className = "result success";
+            resultDiv.textContent = `✅ User Profile API Working!\n\nUser Data:\n${JSON.stringify(data.user, null, 2)}`;
+          } else {
+            resultDiv.className = "result error";
+            resultDiv.textContent = `❌ API Error: ${data.message || "Unknown error"}`;
+          }
+        } catch (error) {
+          resultDiv.className = "result error";
+          resultDiv.textContent = `❌ Network Error: ${error.message}`;
+        }
+      }
+
+      async function testUserCoupons() {
+        const resultDiv = document.getElementById("coupons-result");
+        resultDiv.textContent = "Testing...";
+
+        try {
+          const response = await fetch("/api/user/coupons");
+          const data = await response.json();
+
+          if (data.success) {
+            resultDiv.className = "result success";
+            resultDiv.textContent = `✅ User Coupons API Working!\n\nCoupons Data:\n${JSON.stringify(data.coupons, null, 2)}`;
+          } else {
+            resultDiv.className = "result error";
+            resultDiv.textContent = `❌ API Error: ${data.message || "Unknown error"}`;
+          }
+        } catch (error) {
+          resultDiv.className = "result error";
+          resultDiv.textContent = `❌ Network Error: ${error.message}`;
+        }
+      }
+
+      async function testPlans() {
+        const resultDiv = document.getElementById("plans-result");
+        resultDiv.textContent = "Testing...";
+
+        try {
+          const response = await fetch("/api/admin/plans");
+          const data = await response.json();
+
+          if (data.success) {
+            resultDiv.className = "result success";
+            resultDiv.textContent = `✅ Plans API Working!\n\nPlans Data:\n${JSON.stringify(data.plans, null, 2)}`;
+          } else {
+            resultDiv.className = "result error";
+            resultDiv.textContent = `❌ API Error: ${data.message || "Unknown error"}`;
+          }
+        } catch (error) {
+          resultDiv.className = "result error";
+          resultDiv.textContent = `❌ Network Error: ${error.message}`;
+        }
+      }
+
+      function testSettingsNavigation() {
+        const resultDiv = document.getElementById("navigation-result");
+        resultDiv.className = "result success";
+        resultDiv.textContent =
+          '✅ Settings navigation ready! Click the user dropdown in the dashboard and select "Settings" to test the component.';
+      }
+    </script>
+  </body>
+</html>

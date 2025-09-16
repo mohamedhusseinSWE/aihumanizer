@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Humanize API</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 200px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        background: #8b5cf6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px 5px;
+      }
+      button:hover {
+        background: #7c3aed;
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      .mode-selector {
+        margin: 10px 0;
+      }
+      .mode-selector label {
+        margin-right: 15px;
+      }
+      .result {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test AI Humanization API</h1>
+
+    <div class="mode-selector">
+      <label>
+        <input type="radio" name="mode" value="balanced" checked /> Balanced
+        Mode
+      </label>
+      <label>
+        <input type="radio" name="mode" value="ultra" /> Ultra Mode
+      </label>
+    </div>
+
+    <div class="container">
+      <div>
+        <h3>Input Text (AI Generated)</h3>
+        <textarea
+          id="inputText"
+          placeholder="Paste your AI-generated text here..."
+        >
+Artificial intelligence has revolutionized numerous industries by automating complex processes and enabling data-driven decision making. Machine learning algorithms can analyze vast amounts of information to identify patterns and make predictions with remarkable accuracy. This technology has applications in healthcare, finance, transportation, and many other sectors, fundamentally changing how businesses operate and deliver value to customers.</textarea
+        >
+      </div>
+
+      <div>
+        <h3>Humanized Output</h3>
+        <textarea
+          id="outputText"
+          placeholder="Humanized text will appear here..."
+          readonly
+        ></textarea>
+      </div>
+    </div>
+
+    <div style="text-align: center">
+      <button id="humanizeBtn" onclick="humanizeText()">Humanize Text</button>
+      <button onclick="clearText()">Clear All</button>
+    </div>
+
+    <div id="result" class="result" style="display: none"></div>
+
+    <script>
+      async function humanizeText() {
+        const inputText = document.getElementById("inputText").value;
+        const outputText = document.getElementById("outputText");
+        const humanizeBtn = document.getElementById("humanizeBtn");
+        const result = document.getElementById("result");
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+
+        if (!inputText.trim()) {
+          alert("Please enter some text to humanize");
+          return;
+        }
+
+        humanizeBtn.disabled = true;
+        humanizeBtn.textContent = "Humanizing...";
+        result.style.display = "none";
+
+        try {
+          const response = await fetch("/api/humanize", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              text: inputText,
+              mode: mode,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            outputText.value = data.humanizedText;
+            result.innerHTML = `
+                        <strong>Success!</strong><br>
+                        Original words: ${data.wordCount.original}<br>
+                        Humanized words: ${data.wordCount.humanized}<br>
+                        Mode: ${data.mode}
+                    `;
+            result.style.display = "block";
+          } else {
+            outputText.value = "Error: " + data.error;
+            result.innerHTML = `<strong>Error:</strong> ${data.error}`;
+            result.style.display = "block";
+          }
+        } catch (error) {
+          outputText.value = "Error: " + error.message;
+          result.innerHTML = `<strong>Error:</strong> ${error.message}`;
+          result.style.display = "block";
+        } finally {
+          humanizeBtn.disabled = false;
+          humanizeBtn.textContent = "Humanize Text";
+        }
+      }
+
+      function clearText() {
+        document.getElementById("inputText").value = "";
+        document.getElementById("outputText").value = "";
+        document.getElementById("result").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

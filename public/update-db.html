@@ -1,0 +1,366 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Update Database - Fix Subscription</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        padding: 15px 30px;
+        margin: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .result {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      .success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+      .stat-card {
+        background: #e9ecef;
+        padding: 15px;
+        border-radius: 5px;
+        text-align: center;
+      }
+      .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Update Database - Fix Subscription</h1>
+      <p>
+        This will update your Neon database with the correct subscription values
+        for user <strong>rX38N1DFFLwOwX6iyKPn0Lt2TblheIK9</strong>.
+      </p>
+
+      <div style="text-align: center">
+        <button onclick="updateDatabase()">🚀 Update Database Now</button>
+        <button onclick="fixIbrahim()">🔧 Fix Ibrahim's Account</button>
+        <button onclick="checkDatabase()">📊 Check Current State</button>
+      </div>
+
+      <div
+        style="
+          margin: 20px 0;
+          padding: 15px;
+          background: #e7f3ff;
+          border-radius: 5px;
+        "
+      >
+        <h3>📝 Instructions:</h3>
+        <p><strong>For any new user who tries to upgrade:</strong></p>
+        <ol>
+          <li>Click "Check Current State" to see all users</li>
+          <li>Find the user who tried to upgrade (they'll have null values)</li>
+          <li>Use the form below to fix their subscription</li>
+        </ol>
+      </div>
+
+      <div
+        style="
+          margin: 20px 0;
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 5px;
+        "
+      >
+        <h3>🔧 Fix Any User:</h3>
+        <div
+          style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"
+        >
+          <input
+            type="text"
+            id="userId"
+            placeholder="User ID"
+            style="
+              padding: 8px;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              flex: 1;
+              min-width: 200px;
+            "
+          />
+          <select
+            id="planId"
+            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px"
+          >
+            <option value="1">Pro Plan (ID: 1)</option>
+            <option value="2">Premium Plan (ID: 2)</option>
+          </select>
+          <button onclick="fixAnyUser()">Fix This User</button>
+        </div>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <script>
+      async function updateDatabase() {
+        try {
+          document.getElementById("result").innerHTML =
+            '<div class="result info">🔄 Updating database... Please wait...</div>';
+
+          const response = await fetch("/api/fix-subscription", {
+            method: "GET",
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("result").innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Database Updated Successfully!</h3>
+                            <h4>Updated User:</h4>
+                            <pre>${JSON.stringify(data.updatedUser, null, 2)}</pre>
+                            
+                            <div class="stats">
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.totalUsers}</div>
+                                    <div>Total Users</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.usersWithSubscriptions}</div>
+                                    <div>Users with Subscriptions</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.usersWithPlans}</div>
+                                    <div>Users with Plans</div>
+                                </div>
+                            </div>
+                            
+                            <h4>All Users in Database:</h4>
+                            <pre>${JSON.stringify(data.allUsers, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("result").innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error:</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure your development server is running on localhost:3000</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function fixIbrahim() {
+        try {
+          document.getElementById("result").innerHTML =
+            '<div class="result info">🔄 Fixing Ibrahim\'s account...</div>';
+
+          const response = await fetch("/api/fix-user-subscription", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: "iPfX0qsCguI0byYiC18YInj3FN2Gzs9E",
+              planId: 1,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("result").innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Ibrahim's Account Fixed Successfully!</h3>
+                            <h4>Updated User:</h4>
+                            <pre>${JSON.stringify(data.updatedUser, null, 2)}</pre>
+                            
+                            <div class="stats">
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.totalUsers}</div>
+                                    <div>Total Users</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.usersWithSubscriptions}</div>
+                                    <div>Users with Subscriptions</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.usersWithPlans}</div>
+                                    <div>Users with Plans</div>
+                                </div>
+                            </div>
+                            
+                            <h4>All Users in Database:</h4>
+                            <pre>${JSON.stringify(data.allUsers, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("result").innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error:</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function fixAnyUser() {
+        const userId = document.getElementById("userId").value;
+        const planId = document.getElementById("planId").value;
+
+        if (!userId) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>Please enter a User ID</p>
+                    </div>
+                `;
+          return;
+        }
+
+        try {
+          document.getElementById("result").innerHTML =
+            `<div class="result info">🔄 Fixing user ${userId}...</div>`;
+
+          const response = await fetch("/api/fix-user-subscription", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userId,
+              planId: parseInt(planId),
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("result").innerHTML = `
+                        <div class="result success">
+                            <h3>✅ User Fixed Successfully!</h3>
+                            <h4>Updated User:</h4>
+                            <pre>${JSON.stringify(data.updatedUser, null, 2)}</pre>
+                            
+                            <div class="stats">
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.totalUsers}</div>
+                                    <div>Total Users</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.usersWithSubscriptions}</div>
+                                    <div>Users with Subscriptions</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${data.stats.usersWithPlans}</div>
+                                    <div>Users with Plans</div>
+                                </div>
+                            </div>
+                            
+                            <h4>All Users in Database:</h4>
+                            <pre>${JSON.stringify(data.allUsers, null, 2)}</pre>
+                        </div>
+                    `;
+          } else {
+            document.getElementById("result").innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error:</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+          }
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      async function checkDatabase() {
+        try {
+          document.getElementById("result").innerHTML =
+            '<div class="result info">🔄 Checking database state...</div>';
+
+          const response = await fetch("/api/fix-user-subscription");
+          const data = await response.json();
+
+          document.getElementById("result").innerHTML = `
+                    <div class="result">
+                        <h3>📊 Current Database State:</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+        }
+      }
+    </script>
+  </body>
+</html>
