@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PrismaClient, Prisma } from "@/generated/prisma";
@@ -13,7 +12,8 @@ export const config = { api: { bodyParser: false } };
 
 export async function POST(req: Request) {
   const rawBody = await req.arrayBuffer();
-  const sig = (await headers()).get("stripe-signature");
+    const sig = req.headers.get("stripe-signature");
+
   const secret = process.env.STRIPE_WEBHOOK_SECRET!;
   let event: Stripe.Event;
 
