@@ -125,7 +125,7 @@ export const signInSocial = async (provider: "google") => {
   const { url } = await auth.api.signInSocial({
     body: {
       provider,
-      callbackURL: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
+      callbackURL: "/dashboard",
     },
   });
 
