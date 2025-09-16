@@ -14,8 +14,13 @@ export async function POST(req: Request) {
   const rawBody = await req.arrayBuffer();
   const sig = req.headers.get("stripe-signature");
 
-  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim()!;
-  console.log("Using webhook secret:", `"${secret}"`);
+  const secretRaw = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secretRaw) {
+    throw new Error(
+      "STRIPE_WEBHOOK_SECRET is not set in environment variables"
+    );
+  }
+  const secret = secretRaw.trim();
 
   let event: Stripe.Event;
 
