@@ -84,9 +84,11 @@ const SubscriptionsManagement = () => {
     setFilteredSubscriptions(filtered);
   }, [subscriptions, searchTerm, statusFilter]);
 
-  useEffect(() => {
-    fetchSubscriptions();
-  }, []);
+ useEffect(() => {
+  fetchSubscriptions();
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 
   useEffect(() => {
     filterSubscriptions();

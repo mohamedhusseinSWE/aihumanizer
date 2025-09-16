@@ -98,9 +98,10 @@ const AffiliateProgram = () => {
   const [registering, setRegistering] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
-  useEffect(() => {
-    fetchAffiliateData();
-  }, []);
+useEffect(() => {
+  fetchAffiliateData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   const fetchAffiliateData = async () => {
     try {
@@ -166,6 +167,7 @@ const AffiliateProgram = () => {
       }
     } catch (error) {
       toast.error("Failed to register as affiliate");
+      console.error("Error registering as affiliate:", error);
     } finally {
       setRegistering(false);
     }

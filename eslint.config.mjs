@@ -18,7 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
-      "src/generated/prisma/**/*.js",
+      "src/generated/prisma/**/*.js", // تجاهل ملفات JS المولدة
+      "src/generated/prisma/**/*.d.ts", // تجاهل ملفات TS المولدة
     ],
   },
 ];

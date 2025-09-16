@@ -44,6 +44,8 @@ export function AdminLoginForm() {
       router.push("/admin/dashboard");
     } catch (error) {
       toast.error("Invalid Email Or Password Please Try Again ...");
+      console.error("Failed to login admin:", error);
+
       form.setError("root", {
         type: "manual",
         message: "Invalid Email And Password Please Try Again",

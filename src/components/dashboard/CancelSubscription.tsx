@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-import { AlertTriangle, X, CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
 interface CancelSubscriptionProps {
   userPlan: string | null;
