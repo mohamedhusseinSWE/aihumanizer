@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, GraduationCap, BookOpen, PenTool } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 const BypassAISection = () => {
   return (
@@ -18,35 +18,36 @@ const BypassAISection = () => {
               variant="outline"
               className="mb-4 text-purple-600 border-purple-200 text-sm font-medium"
             >
-              ADVANCED HUMANIZER ENGINE
+              Bypass AI Detector
             </Badge>
 
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Rewrite Essays, Articles and Emails
+              Undetectable AI Writer
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              Rewrite academic essays, blogs, and emails with natural human tone
-              while preserving meaning and academic clarity.
+              AIHumanizer provides more reliable AI detection bypass than
+              SemiHuman AI, especially with the latest detection systems like
+              GPTZero.
             </p>
 
             <div className="space-y-4 mb-8">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span className="text-gray-700">
-                  Context-aware rewriting for essays and research papers
+                  99.8% success rate against all major AI detectors
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span className="text-gray-700">
-                  Maintains original meaning and tone
+                  Continuously updated to counter evolving detection methods
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span className="text-gray-700">
-                  Trusted by students and researchers
+                  Built-in detector testing before finalizing content
                 </span>
               </div>
             </div>

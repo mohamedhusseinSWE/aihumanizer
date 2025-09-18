@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, GraduationCap, BookOpen, PenTool } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 const BypassAISection = () => {
   return (
@@ -18,16 +18,17 @@ const BypassAISection = () => {
               variant="outline"
               className="mb-4 text-purple-600 border-purple-200 text-sm font-medium"
             >
-              ADVANCED HUMANIZER ENGINE
+              Enhanced Model
             </Badge>
 
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Rewrite Essays, Articles and Emails
+              Advanced Text Humanizer Model
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              Rewrite academic essays, blogs, and emails with natural human tone
-              while preserving meaning and academic clarity.
+              Our advanced trained model ensures your content passes through all
+              major AI detectors with a 99% success rate, significantly
+              outperforming Quillbot's capabilities.
             </p>
 
             <div className="space-y-4 mb-8">

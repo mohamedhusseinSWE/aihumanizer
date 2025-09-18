@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import OpenAI from "openai"; // npm install openai // or what u like at all in using api model 
 
 const prisma = new PrismaClient();
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // Define proper session types
 interface SessionUser {
@@ -45,10 +49,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-    if (!openRouterApiKey) {
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { success: false, error: "OpenRouter API key not configured" },
+        { success: false, error: "OpenAI API key not configured" },
         { status: 500 }
       );
     }
@@ -89,50 +92,21 @@ Guidelines for humanization:
 9. Add natural pauses and rhythm
 10. Ensure the text flows naturally from one idea to the next
 
-Mode: ${
-      mode === "ultra"
-        ? "Ultra mode - Make it extremely human-like with maximum naturalness"
-        : "Balanced mode - Make it human-like while maintaining clarity"
-    }
-
 Original text to humanize:
 "${text}"
 
-Please rewrite this text to sound completely human-written:`;
+Please rewrite this text to sound completely human-written in a **balanced** way (human-like but clear):`;
 
-    // Call OpenRouter API
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openRouterApiKey}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer":
-            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-          "X-Title": "AI Humanizer",
-        },
-        body: JSON.stringify({
-          model: "anthropic/claude-3.5-sonnet",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 2000,
-          temperature: 0.8,
-          top_p: 0.9,
-        }),
-      }
-    );
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Or whichever OpenAI model you prefer
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 2000,
+      temperature: 0.8,
+      top_p: 0.9,
+    });
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("OpenRouter API error:", errorData);
-      return NextResponse.json(
-        { success: false, error: "Failed to humanize text" },
-        { status: 500 }
-      );
-    }
-
-    const data = await response.json();
-    const humanizedText = data.choices?.[0]?.message?.content?.trim();
+    const humanizedText = response.choices?.[0]?.message?.content?.trim();
 
     if (!humanizedText) {
       await prisma.humanizationJob.update({
@@ -164,7 +138,6 @@ Please rewrite this text to sound completely human-written:`;
       success: true,
       humanizedText,
       originalText: text,
-      mode,
       jobId: job.id,
       wordCount: { original: wordCount, humanized: humanizedWordCount },
     });
@@ -194,3 +167,68 @@ Please rewrite this text to sound completely human-written:`;
     );
   }
 }
+
+
+
+/**
+ * ============================================================
+ * 👉 Switching from OpenAI API to Claude API (Anthropic)
+ * ============================================================
+ *
+ * By default, this API route uses OpenAI for text humanization.
+ * If you want to use Claude (Anthropic) instead, follow the steps:
+ *
+ * ------------------------------------------------------------
+ * 1. Install Anthropic SDK:
+ *    npm install @anthropic-ai/sdk
+ *
+ * 2. Import Anthropic at the top of this file:
+ *    import Anthropic from "@anthropic-ai/sdk";
+ *
+ * 3. Initialize the client instead of OpenAI:
+ *    const anthropic = new Anthropic({
+ *      apiKey: process.env.ANTHROPIC_API_KEY!,
+ *    });
+ *
+ * 4. Replace the OpenAI request block with Claude:
+ *
+ *    // Call Claude API
+ *    const response = await anthropic.messages.create({
+ *      model: "claude-3-opus-20240229", // or "claude-3-sonnet-20240229"
+ *      max_tokens: 2000,
+ *      temperature: 0.8,
+ *      messages: [
+ *        {
+ *          role: "user",
+ *          content: prompt,
+ *        },
+ *      ],
+ *    });
+ *
+ *    // Claude's response format
+ *    const humanizedText = response.content[0]?.text?.trim();
+ *
+ * 5. Keep the rest of the logic (Prisma job creation, updates,
+ *    word counts, error handling) exactly the same.
+ *
+ * ------------------------------------------------------------
+ * ⚠️ Notes:
+ * - Make sure you add `ANTHROPIC_API_KEY` to your .env file.
+ * - Claude’s response structure is slightly different:
+ *     OpenAI  → response.choices[0].message.content
+ *     Claude  → response.content[0].text
+ * - Claude models have stricter token limits; adjust `max_tokens`
+ *   and `model` depending on your Anthropic plan.
+ *
+ * ------------------------------------------------------------
+ * ✅ Quick Swap Example:
+ * 
+ * // OpenAI
+ * const response = await openai.chat.completions.create({...});
+ * const humanizedText = response.choices[0].message.content.trim();
+ *
+ * // Claude
+ * const response = await anthropic.messages.create({...});
+ * const humanizedText = response.content[0].text.trim();
+ * ------------------------------------------------------------
+ */
