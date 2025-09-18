@@ -46,26 +46,31 @@ export default function AuthClientPage() {
     try {
       if (isSignIn) {
         const result = await signIn(email, password, captchaToken);
-        router.push("/dashboard");
         if (!result.user) {
-          toast.error("Invalid email or password");
-          setError("Invalid email or password");
+          toast.error(result.error || "Invalid email or password");
+          setError(result.error || "Invalid email or password");
+          setIsLoading(false);
+          return; // ⬅️ Only navigate if result.user exists!
         }
+        router.push("/dashboard");
       } else {
         const result = await signUp(email, password, name, captchaToken);
-        router.push("/dashboard");
-        toast.success("login successfully");
-
         if (!result.user) {
-          setError("Failed to create account");
+          toast.error(result.error || "Failed to create account");
+          setError(result.error || "Failed to create account");
+          setIsLoading(false);
+          return; // ⬅️ Only navigate if result.user exists!
         }
+        toast.success("Account created successfully");
+        router.push("/dashboard");
       }
     } catch (err) {
-      setError(
-        `Authentication error: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
-      );
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Unknown authentication error";
+      toast.error(msg);
+      setError(msg);
     } finally {
       setIsLoading(false);
     }
