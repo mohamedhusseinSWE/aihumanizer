@@ -26,7 +26,7 @@ export default function AuthClientPage() {
       setError(
         `Error authenticating with ${provider}: ${
           err instanceof Error ? err.message : "Unknown error"
-        }`,
+        }`
       );
     } finally {
       setIsLoading(false);
@@ -56,8 +56,8 @@ export default function AuthClientPage() {
       } else {
         const result = await signUp(email, password, name, captchaToken);
         if (!result.user) {
-          toast.error(result.error || "Failed to create account");
-          setError(result.error || "Failed to create account");
+          toast.error("Failed to create account");
+          setError("Failed to create account");
           setIsLoading(false);
           return; // ⬅️ Only navigate if result.user exists!
         }
@@ -66,9 +66,7 @@ export default function AuthClientPage() {
       }
     } catch (err) {
       const msg =
-        err instanceof Error
-          ? err.message
-          : "Unknown authentication error";
+        err instanceof Error ? err.message : "Unknown authentication error";
       toast.error(msg);
       setError(msg);
     } finally {
@@ -90,8 +88,6 @@ export default function AuthClientPage() {
                 : "Sign up to get started with better-auth"}
             </p>
           </div>
-
-        
 
           {/* Social Authentication */}
           <div className="space-y-3">
@@ -203,8 +199,8 @@ export default function AuthClientPage() {
                   ? "Signing in..."
                   : "Creating account..."
                 : isSignIn
-                  ? "Sign In"
-                  : "Create Account"}
+                ? "Sign In"
+                : "Create Account"}
             </button>
           </form>
 
