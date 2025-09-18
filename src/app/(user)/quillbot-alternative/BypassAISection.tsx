@@ -28,7 +28,7 @@ const BypassAISection = () => {
             <p className="text-lg text-gray-600 mb-8">
               Our advanced trained model ensures your content passes through all
               major AI detectors with a 99% success rate, significantly
-              outperforming Quillbot's capabilities.
+              outperforming Quillbot&apos;s capabilities.
             </p>
 
             <div className="space-y-4 mb-8">

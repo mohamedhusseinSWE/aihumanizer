@@ -57,8 +57,8 @@ const BypassAISection2 = () => {
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              Unlike SemiHuman AI's limited options, AIHumanizerKit gives you
-              fine-grained control over the humanization process.
+              Unlike SemiHuman AI&apos;s limited options, AIHumanizerKit gives
+              you fine-grained control over the humanization process.
             </p>
 
             <div className="space-y-4 mb-8">

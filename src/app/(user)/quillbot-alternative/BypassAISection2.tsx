@@ -57,29 +57,27 @@ const BypassAISection2 = () => {
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              Unlike Quillbot's limited paraphrasing options, AIHumanizer offers
-              12+ tone adjustments to match your brand voice perfectly.
+              Unlike Quillbot&apos;s limited paraphrasing options, AIHumanizer
+              offers 12+ tone adjustments to match your brand voice perfectly.
             </p>
 
             <div className="space-y-4 mb-8">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span className="text-gray-700">
-                 Professional, casual, academic, and creative tones.
+                  Professional, casual, academic, and creative tones.
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span className="text-gray-700">
-                 Industry-specific language adaptation.
-
+                  Industry-specific language adaptation.
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span className="text-gray-700">
-               Readability level controls for your target audience.
-
+                  Readability level controls for your target audience.
                 </span>
               </div>
             </div>

@@ -57,9 +57,9 @@ const BypassAISection2 = () => {
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              Unlike Writehuman's single-pass system, AIHumanizerKit employs a
-              multi-layer approach that transforms content at different
-              linguistic levels.
+              Unlike Writehuman&apos;s single-pass system, AIHumanizerKit
+              employs a multi-layer approach that transforms content at
+              different linguistic levels.
             </p>
 
             <div className="space-y-4 mb-8">

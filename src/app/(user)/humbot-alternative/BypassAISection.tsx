@@ -26,8 +26,9 @@ const BypassAISection = () => {
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              Our proprietary neural network outperforms Humbot's basic model by
-              analyzing and transforming text at a deeper linguistic level.
+              Our proprietary neural network outperforms Humbot&apos;s basic
+              model by analyzing and transforming text at a deeper linguistic
+              level.
             </p>
 
             <div className="space-y-4 mb-8">

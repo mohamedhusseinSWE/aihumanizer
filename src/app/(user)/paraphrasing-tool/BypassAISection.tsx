@@ -24,10 +24,9 @@ const BypassAISection = () => {
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Superior AI Writer
             </h2>
-
             <p className="text-lg text-gray-600 mb-8">
               Our advanced humanization technology achieves a 99% pass rate
-              against all major AI detectors, outperforming StealthGPT's
+              against all major AI detectors, outperforming StealthGPT&apos;s
               inconsistent results.
             </p>
 

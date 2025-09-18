@@ -58,7 +58,7 @@ const BypassAISection2 = () => {
 
             <p className="text-lg text-gray-600 mb-8">
               Process content faster and more effectively than StealthWriter
-              with AIHumanizer's optimized processing engine.
+              with AIHumanizer&apos;s optimized processing engine.
             </p>
 
             <div className="space-y-4 mb-8">

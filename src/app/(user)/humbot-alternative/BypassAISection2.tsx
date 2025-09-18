@@ -58,7 +58,7 @@ const BypassAISection2 = () => {
 
             <p className="text-lg text-gray-600 mb-8">
               AIHumanizer achieves a 99% pass rate against all major AI content
-              detectors, significantly better than Humbot's inconsistent
+              detectors, significantly better than Humbot&apos;s inconsistent
               results.
             </p>
 

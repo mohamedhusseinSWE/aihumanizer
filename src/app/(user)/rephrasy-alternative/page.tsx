@@ -7,8 +7,6 @@ import CTASection from "@/components/common/CTASection";
 import FAQSection from "@/components/common/FAQSection";
 import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import React from "react";
 import RephrasySection from "./RephrasySection";
 import Features from "./Features";
@@ -17,9 +15,6 @@ import BypassAISection2 from "./BypassAISection2";
 
 export default async function HomePage() {
   // Get session for pricing component
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
   return (
     <div className="min-h-screen bg-white">
       {/* Header Navigation */}

@@ -26,9 +26,9 @@ const BypassAISection = () => {
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
-              AIHumanizer's advanced transformation engine provides deeper, more
-              effective humanization than Rephrasy's basic paraphrasing
-              approach.
+              AIHumanizer&apos;s advanced transformation engine provides deeper,
+              more effective humanization than Rephrasy&apos;s basic
+              paraphrasing approach.
             </p>
 
             <div className="space-y-4 mb-8">

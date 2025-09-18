@@ -27,7 +27,7 @@ const BypassAISection = () => {
 
             <p className="text-lg text-gray-600 mb-8">
               AIHumanizer uses proprietary pattern transformation technology
-              that outperforms StealthWriter's basic humanization approach.
+              that outperforms StealthWriter&apos;s basic humanization approach.
             </p>
 
             <div className="space-y-4 mb-8">
