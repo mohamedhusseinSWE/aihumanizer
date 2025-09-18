@@ -69,7 +69,7 @@ export default function DashboardClientPage({ session }: { session: Session }) {
   };
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [currentPage, setCurrentPage] = useState("humanize-ai");
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [showPlansModal, setShowPlansModal] = useState(false);
   const [plans, setPlans] = useState<Plan[]>([]);
