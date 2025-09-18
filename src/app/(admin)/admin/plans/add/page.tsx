@@ -22,7 +22,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type IntervalType = "monthly" | "yearly";
+type IntervalType = "monthly" | "yearly" | "lifetime"; // <-- Add "lifetime"
 type PlanStatus = "ACTIVE" | "HIDDEN" | "DISABLED";
 
 interface PlanFormData {
@@ -36,6 +36,7 @@ interface PlanFormData {
   status: PlanStatus;
   isPopular: boolean;
   models: string[];
+  priceId: string;
 }
 
 export default function AddPlanPage() {
@@ -47,12 +48,13 @@ export default function AddPlanPage() {
     description: "",
     features: "",
     price: 0,
-    interval: "monthly",
+    interval: "monthly", // default can stay as monthly
     wordLimitPerRequest: 0,
     wordsPerMonth: 0,
     status: "ACTIVE",
     isPopular: false,
     models: [],
+    priceId: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -60,7 +62,7 @@ export default function AddPlanPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -75,7 +77,7 @@ export default function AddPlanPage() {
     if (!addPlan) return;
     setLoading(true);
     try {
-      await addPlan({ ...form, priceId: "" });
+      await addPlan({ ...form });
       toast.success("Plan Created Successfully");
       setForm({
         name: "",
@@ -88,6 +90,7 @@ export default function AddPlanPage() {
         status: "ACTIVE",
         isPopular: false,
         models: [],
+        priceId: "",
       });
       router.push("/admin/plans/list");
     } catch (err) {
@@ -190,6 +193,19 @@ export default function AddPlanPage() {
                       className="h-12 text-lg border-2"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-slate-700 font-semibold">
+                      Stripe Price ID
+                    </Label>
+                    <Input
+                      name="priceId"
+                      value={form.priceId}
+                      onChange={handleChange}
+                      required
+                      placeholder="e.g., price_1OxY2pAbCdEfGhIjKlMn"
+                      className="h-12 text-lg border-2"
+                    />
+                  </div>
 
                   <div>
                     <Label className="flex items-center gap-2 text-slate-700 font-semibold">
@@ -203,6 +219,7 @@ export default function AddPlanPage() {
                     >
                       <option value="monthly">Monthly</option>
                       <option value="yearly">Yearly</option>
+                      <option value="lifetime">Lifetime</option> {/* <-- Add this */}
                     </select>
                   </div>
 
@@ -322,7 +339,7 @@ export default function AddPlanPage() {
                         ${form.price}
                         <span className="text-sm text-slate-500">
                           {" "}
-                          /{form.interval}
+                          /{form.interval === "lifetime" ? "Lifetime" : form.interval.charAt(0).toUpperCase() + form.interval.slice(1)}
                         </span>
                       </div>
                       <div className="text-sm text-slate-600">

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!text || text.trim().length === 0) {
       return NextResponse.json(
         { success: false, error: "Text is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     if (!openRouterApiKey) {
       return NextResponse.json(
         { success: false, error: "OpenRouter API key not configured" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -119,7 +119,7 @@ Please rewrite this text to sound completely human-written:`;
           temperature: 0.8,
           top_p: 0.9,
         }),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -127,7 +127,7 @@ Please rewrite this text to sound completely human-written:`;
       console.error("OpenRouter API error:", errorData);
       return NextResponse.json(
         { success: false, error: "Failed to humanize text" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -142,7 +142,7 @@ Please rewrite this text to sound completely human-written:`;
 
       return NextResponse.json(
         { success: false, error: "No humanized text generated" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -190,7 +190,7 @@ Please rewrite this text to sound completely human-written:`;
 
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

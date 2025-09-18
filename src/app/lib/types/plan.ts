@@ -5,7 +5,7 @@ export type Plan = {
   features: string;
   price: number;
   priceId: string;
-  interval: "monthly" | "yearly";
+  interval: "monthly" | "yearly" | "lifetime"; // <-- Add "lifetime"
   wordLimitPerRequest: number;
   wordsPerMonth: number; // 0 = unlimited
   status: "ACTIVE" | "HIDDEN" | "DISABLED";

@@ -52,9 +52,7 @@ export async function POST(req: Request) {
     // 2️⃣ Generate Coupons
     const couponsData = Array.from({ length: parseInt(couponCount) }).map(
       () => ({
-        code: `${name.toUpperCase().replace(/\s+/g, "")}-${generateRandomCoupon(
-          6,
-        )}`,
+        code: generateRandomCoupon(10),
         campaignId: campaign.id,
         planId: parseInt(planId),
       }),

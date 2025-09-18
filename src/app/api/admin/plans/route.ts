@@ -41,19 +41,32 @@ export async function POST(req: Request) {
       wordLimitPerRequest = 0,
       wordsPerMonth = 0,
       models = [],
+      priceId: providedPriceId = null,
     } = body;
 
-    // Optional: create Stripe product/price only if price > 0
-    let priceId: string | null = null;
-    if (price > 0) {
+    let priceId: string | null = providedPriceId;
+
+    if (!priceId && price > 0) {
       const product = await stripe.products.create({ name });
-      const stripePrice = await stripe.prices.create({
-        unit_amount: Math.round(price * 100), // cents
-        currency: "usd",
-        recurring: { interval: interval === "monthly" ? "month" : "year" },
-        product: product.id,
-      });
-      priceId = stripePrice.id;
+
+      if (interval === "lifetime") {
+        // For lifetime, create a one-time price
+        const stripePrice = await stripe.prices.create({
+          unit_amount: Math.round(price * 100),
+          currency: "usd",
+          product: product.id,
+        });
+        priceId = stripePrice.id;
+      } else {
+        // For monthly/yearly, create a recurring price
+        const stripePrice = await stripe.prices.create({
+          unit_amount: Math.round(price * 100),
+          currency: "usd",
+          recurring: { interval: interval === "monthly" ? "month" : "year" },
+          product: product.id,
+        });
+        priceId = stripePrice.id;
+      }
     }
 
     const plan = await prisma.plan.create({
@@ -68,7 +81,7 @@ export async function POST(req: Request) {
         wordLimitPerRequest,
         wordsPerMonth,
         priceId,
-        models, // array of models
+        models,
       },
     });
 

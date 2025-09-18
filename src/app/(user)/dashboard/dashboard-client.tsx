@@ -139,7 +139,7 @@ export default function DashboardClientPage({ session }: { session: Session }) {
     return () => {
       window.removeEventListener(
         "navigateToSettings",
-        handleNavigateToSettings,
+        handleNavigateToSettings
       );
     };
   }, []);
@@ -159,7 +159,7 @@ export default function DashboardClientPage({ session }: { session: Session }) {
             const profileData = await profileResponse.json();
             if (profileData.user?.planId) {
               const currentPlan = data.plans.find(
-                (plan: Plan) => plan.id === profileData.user.planId,
+                (plan: Plan) => plan.id === profileData.user.planId
               );
               setUserPlan(currentPlan || null);
             }
@@ -179,7 +179,7 @@ export default function DashboardClientPage({ session }: { session: Session }) {
     try {
       // Find Pro plan
       const proPlan = plans.find((plan) =>
-        plan.name.toLowerCase().includes("pro"),
+        plan.name.toLowerCase().includes("pro")
       );
       if (proPlan) {
         const res = await fetch("/api/stripe/checkout", {
@@ -611,7 +611,8 @@ export default function DashboardClientPage({ session }: { session: Session }) {
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         {currentPage === "dashboard" && <DashboardContent />}
-        {currentPage === "humanize-ai" && <HumanizeAI />}
+        {currentPage === "humanize-ai" && <HumanizeAI session={session} />}
+
         {currentPage === "redeem-code" && <RedeemCode />}
         {currentPage === "settings" && <Settings />}
         {currentPage !== "dashboard" &&
@@ -710,7 +711,7 @@ export default function DashboardClientPage({ session }: { session: Session }) {
                                 />
                                 <span>{feature.trim()}</span>
                               </li>
-                            ),
+                            )
                           )}
                         </ul>
                       </div>

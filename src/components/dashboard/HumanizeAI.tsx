@@ -17,6 +17,10 @@ import {
   Strikethrough,
   MoreHorizontal,
 } from "lucide-react";
+import { auth } from "@/lib/auth";
+
+type Session = typeof auth.$Infer.Session;
+
 
 interface UserData {
   id: string;
@@ -48,7 +52,11 @@ interface HumanizationJob {
   completedAt: string | null;
 }
 
-export default function HumanizeAI() {
+export default function HumanizeAI({ session }: { session: Session }) {
+
+  
+    
+
   const [selectedMode, setSelectedMode] = useState<"balanced" | "ultra">(
     "balanced",
   );
@@ -68,6 +76,8 @@ export default function HumanizeAI() {
   const [isDuplicateUser, setIsDuplicateUser] = useState(false);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [inputFontSize, setInputFontSize] = useState("14pt");
+  const [outputFontSize, setOutputFontSize] = useState("14pt");
 
   useEffect(() => {
     fetchUserData();
@@ -555,8 +565,20 @@ export default function HumanizeAI() {
                   <select className="text-sm border-0 bg-transparent">
                     <option>Verdana</option>
                   </select>
-                  <select className="text-sm border-0 bg-transparent">
+                  <select
+                    className="text-sm border-0 bg-transparent"
+                    value={inputFontSize}
+                    onChange={e => setInputFontSize(e.target.value)}
+                  >
+                    <option>10pt</option>
                     <option>12pt</option>
+                    <option>14pt</option>
+                    <option>16pt</option>
+                    <option>18pt</option>
+                    <option>20pt</option>
+                    <option>24pt</option>
+                    <option>28pt</option>
+                    <option>32pt</option>
                   </select>
                   <select className="text-sm border-0 bg-transparent">
                     <option>Paragraph</option>
@@ -574,6 +596,7 @@ export default function HumanizeAI() {
                       : "Enter Text to Humanize (for better results, enter 100 words or above) or Try the below examples"
                   }
                   className="min-h-[300px] resize-none border-0 focus:ring-0 p-0"
+                  style={{ fontSize: inputFontSize }}
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   disabled={isDuplicateUser}
@@ -652,8 +675,20 @@ export default function HumanizeAI() {
                   <select className="text-sm border-0 bg-transparent">
                     <option>Verdana</option>
                   </select>
-                  <select className="text-sm border-0 bg-transparent">
+                  <select
+                    className="text-sm border-0 bg-transparent"
+                    value={outputFontSize}
+                    onChange={e => setOutputFontSize(e.target.value)}
+                  >
+                    <option>10pt</option>
                     <option>12pt</option>
+                    <option>14pt</option>
+                    <option>16pt</option>
+                    <option>18pt</option>
+                    <option>20pt</option>
+                    <option>24pt</option>
+                    <option>28pt</option>
+                    <option>32pt</option>
                   </select>
                   <select className="text-sm border-0 bg-transparent">
                     <option>Paragraph</option>
@@ -667,6 +702,7 @@ export default function HumanizeAI() {
                 <Textarea
                   placeholder="Humanized text will appear here..."
                   className="min-h-[300px] resize-none border-0 focus:ring-0 p-0"
+                  style={{ fontSize: outputFontSize }}
                   value={outputText}
                   readOnly
                 />

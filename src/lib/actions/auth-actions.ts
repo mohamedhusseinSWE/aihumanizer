@@ -53,12 +53,16 @@ export const signUp = async (
       callbackURL: "/dashboard",
     },
   });
+  if (!result.user) {
+    throw new Error("Failed to create account ❌");
+  }
 
   if (result.user) {
     const latestSession = await prisma.session.findFirst({
       where: { userId: result.user.id },
       orderBy: { createdAt: "desc" },
     });
+
     if (latestSession) {
       await prisma.session.update({
         where: { id: latestSession.id },
@@ -104,6 +108,10 @@ export const signIn = async (
       callbackURL: "/dashboard",
     },
   });
+
+  if (!result.user) {
+    throw new Error("Invalid email or password ❌");
+  }
 
   if (result.user) {
     const latestSession = await prisma.session.findFirst({

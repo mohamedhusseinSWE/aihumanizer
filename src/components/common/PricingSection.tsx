@@ -38,7 +38,7 @@ export default function PriceSectionClient({
 }: PriceSectionClientProps) {
   const { plans, fetchPlans, subscribeToPlan } = useAuth();
   const router = useRouter();
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly" | "lifetime">(
     "monthly",
   );
 
@@ -46,6 +46,7 @@ export default function PriceSectionClient({
     fetchPlans();
   }, [fetchPlans]);
 
+  // Add "lifetime" to the filteredPlans
   const filteredPlans = plans.filter(
     (plan) => plan.status === "ACTIVE" && plan.interval === billingCycle,
   );
@@ -79,6 +80,17 @@ export default function PriceSectionClient({
           onClick={() => setBillingCycle("yearly")}
         >
           Yearly <span className="ml-1 text-green-500">Save up to 60%</span>
+        </button>
+        <button
+          className={clsx(
+            "px-6 py-2 rounded-full text-sm font-medium transition",
+            billingCycle === "lifetime"
+              ? "bg-purple-600 text-white"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200",
+          )}
+          onClick={() => setBillingCycle("lifetime")}
+        >
+          Lifetime
         </button>
       </div>
 
@@ -187,7 +199,7 @@ export default function PriceSectionClient({
                   }
                 }}
               >
-                Buy Now
+                Start Free Trial
               </Button>
             </div>
           ))

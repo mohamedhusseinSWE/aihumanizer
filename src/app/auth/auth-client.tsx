@@ -48,6 +48,7 @@ export default function AuthClientPage() {
         const result = await signIn(email, password, captchaToken);
         router.push("/dashboard");
         if (!result.user) {
+          toast.error("Invalid email or password");
           setError("Invalid email or password");
         }
       } else {
