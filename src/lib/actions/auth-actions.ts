@@ -26,16 +26,61 @@ async function verifyCaptcha(captchaToken: string) {
   return data.success as boolean;
 }
 
+export const signIn = async (
+  email: string,
+  password: string,
+  captchaToken: string
+) => {
+  const isValid = await verifyCaptcha(captchaToken);
+  if (!isValid) {
+    return { user: null, error: "Captcha verification failed" };
+  }
+
+  const hdrs = headers();
+  const ip =
+    (await hdrs).get("x-forwarded-for")?.split(",")[0] ||
+    (await hdrs).get("x-real-ip") ||
+    "Unknown";
+
+  const userAgent = (await hdrs).get("user-agent") || null;
+
+  const result = await auth.api.signInEmail({
+    body: {
+      email,
+      password,
+      callbackURL: "/dashboard",
+    },
+  });
+
+  if (!result.user) {
+    return { user: null, error: "Invalid email or password" };
+  }
+
+  if (result.user) {
+    const latestSession = await prisma.session.findFirst({
+      where: { userId: result.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+    if (latestSession) {
+      await prisma.session.update({
+        where: { id: latestSession.id },
+        data: { ipAddress: ip, userAgent },
+      });
+    }
+  }
+
+  return { user: result.user, error: null };
+};
+
 export const signUp = async (
   email: string,
   password: string,
   name: string,
   captchaToken: string
 ) => {
-  // ✅ تحقق من الكابتشا
   const isValid = await verifyCaptcha(captchaToken);
   if (!isValid) {
-    throw new Error("Captcha verification failed");
+    return { user: null, error: "Captcha verification failed" };
   }
 
   const hdrs = headers();
@@ -54,7 +99,7 @@ export const signUp = async (
     },
   });
   if (!result.user) {
-    throw new Error("Failed to create account ❌");
+    return { user: null, error: "Failed to create account" };
   }
 
   if (result.user) {
@@ -79,54 +124,7 @@ export const signUp = async (
     }
   }
 
-  return result;
-};
-
-export const signIn = async (
-  email: string,
-  password: string,
-  captchaToken: string
-) => {
-  // ✅ تحقق من الكابتشا
-  const isValid = await verifyCaptcha(captchaToken);
-  if (!isValid) {
-    throw new Error("Captcha verification failed");
-  }
-
-  const hdrs = headers();
-  const ip =
-    (await hdrs).get("x-forwarded-for")?.split(",")[0] ||
-    (await hdrs).get("x-real-ip") ||
-    "Unknown";
-
-  const userAgent = (await hdrs).get("user-agent") || null;
-
-  const result = await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-      callbackURL: "/dashboard",
-    },
-  });
-
-  if (!result.user) {
-    throw new Error("Invalid email or password ❌");
-  }
-
-  if (result.user) {
-    const latestSession = await prisma.session.findFirst({
-      where: { userId: result.user.id },
-      orderBy: { createdAt: "desc" },
-    });
-    if (latestSession) {
-      await prisma.session.update({
-        where: { id: latestSession.id },
-        data: { ipAddress: ip, userAgent },
-      });
-    }
-  }
-
-  return result;
+  return { user: result.user, error: null };
 };
 
 export const signInSocial = async (provider: "google") => {

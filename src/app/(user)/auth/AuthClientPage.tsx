@@ -47,8 +47,8 @@ export default function AuthClientPage() {
       if (isSignIn) {
         const result = await signIn(email, password, captchaToken);
         if (!result.user) {
-          toast.error("Invalid email or password");
-          setError("Invalid email or password");
+          toast.error(result.error || "Invalid email or password");
+          setError(result.error || "Invalid email or password");
           setIsLoading(false);
           return;
         }
