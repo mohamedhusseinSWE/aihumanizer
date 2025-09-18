@@ -31,45 +31,44 @@ export const signIn = async (
   password: string,
   captchaToken: string
 ) => {
-  const isValid = await verifyCaptcha(captchaToken);
-  if (!isValid) {
-    return { user: null, error: "Captcha verification failed" };
-  }
+  try {
+    const isValid = await verifyCaptcha(captchaToken);
+    if (!isValid) {
+      return { user: null, error: "Captcha verification failed" };
+    }
 
-  const hdrs = headers();
-  const ip =
-    (await hdrs).get("x-forwarded-for")?.split(",")[0] ||
-    (await hdrs).get("x-real-ip") ||
-    "Unknown";
+    const hdrs = headers();
+    const ip =
+      (await hdrs).get("x-forwarded-for")?.split(",")[0] ||
+      (await hdrs).get("x-real-ip") ||
+      "Unknown";
+    const userAgent = (await hdrs).get("user-agent") || null;
 
-  const userAgent = (await hdrs).get("user-agent") || null;
+    const result = await auth.api.signInEmail({
+      body: { email, password, callbackURL: "/dashboard" },
+    });
 
-  const result = await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-      callbackURL: "/dashboard",
-    },
-  });
+    if (!result.user) {
+      return { user: null, error: "Invalid email or password" };
+    }
 
-  if (!result.user) {
-    return { user: null, error: "Invalid email or password" };
-  }
-
-  if (result.user) {
     const latestSession = await prisma.session.findFirst({
       where: { userId: result.user.id },
       orderBy: { createdAt: "desc" },
     });
+
     if (latestSession) {
       await prisma.session.update({
         where: { id: latestSession.id },
         data: { ipAddress: ip, userAgent },
       });
     }
-  }
 
-  return { user: result.user, error: null };
+    return { user: result.user, error: null };
+  } catch (err) {
+    console.error("SignIn failed:", err);
+    return { user: null, error: "Something went wrong while signing in" };
+  }
 };
 
 export const signUp = async (
@@ -78,31 +77,27 @@ export const signUp = async (
   name: string,
   captchaToken: string
 ) => {
-  const isValid = await verifyCaptcha(captchaToken);
-  if (!isValid) {
-    return { user: null, error: "Captcha verification failed" };
-  }
+  try {
+    const isValid = await verifyCaptcha(captchaToken);
+    if (!isValid) {
+      return { user: null, error: "Captcha verification failed" };
+    }
 
-  const hdrs = headers();
-  const ip =
-    (await hdrs).get("x-forwarded-for")?.split(",")[0] ||
-    (await hdrs).get("x-real-ip") ||
-    "Unknown";
-  const userAgent = (await hdrs).get("user-agent") || null;
+    const hdrs = headers();
+    const ip =
+      (await hdrs).get("x-forwarded-for")?.split(",")[0] ||
+      (await hdrs).get("x-real-ip") ||
+      "Unknown";
+    const userAgent = (await hdrs).get("user-agent") || null;
 
-  const result = await auth.api.signUpEmail({
-    body: {
-      email,
-      password,
-      name,
-      callbackURL: "/dashboard",
-    },
-  });
-  if (!result.user) {
-    return { user: null, error: "Failed to create account" };
-  }
+    const result = await auth.api.signUpEmail({
+      body: { email, password, name, callbackURL: "/dashboard" },
+    });
 
-  if (result.user) {
+    if (!result.user) {
+      return { user: null, error: "Failed to create account" };
+    }
+
     const latestSession = await prisma.session.findFirst({
       where: { userId: result.user.id },
       orderBy: { createdAt: "desc" },
@@ -115,16 +110,17 @@ export const signUp = async (
       });
     }
 
-    // Send welcome email after successful registration
     try {
       await sendWelcomeEmail(result.user.name || "User", result.user.email);
     } catch (error) {
       console.error("Failed to send welcome email:", error);
-      // Don't fail the registration if email fails
     }
-  }
 
-  return { user: result.user, error: null };
+    return { user: result.user, error: null };
+  } catch (err) {
+    console.error("SignUp failed:", err);
+    return { user: null, error: "Something went wrong while signing up" };
+  }
 };
 
 export const signInSocial = async (provider: "google") => {
