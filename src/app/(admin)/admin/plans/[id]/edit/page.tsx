@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { updatePlanAction } from "@/lib/actions/updatePlan";
 
-type IntervalType = "monthly" | "yearly";
+type IntervalType = "monthly" | "yearly" | "lifetime";
 type PlanStatus = "ACTIVE" | "HIDDEN" | "DISABLED";
 
 interface PlanFormData {
@@ -35,6 +35,7 @@ interface PlanFormData {
   status: PlanStatus;
   isPopular: boolean;
   models: string[];
+  priceId: string; // <-- Add this
 }
 
 export default function EditPlanPage() {
@@ -56,6 +57,7 @@ export default function EditPlanPage() {
     status: "ACTIVE",
     isPopular: false,
     models: [],
+    priceId: "", // <-- Add this
   });
 
   const [loading, setLoading] = useState(false);
@@ -73,6 +75,7 @@ export default function EditPlanPage() {
         status: existingPlan.status,
         isPopular: existingPlan.isPopular,
         models: existingPlan.models || [],
+        priceId: existingPlan.priceId || "", // <-- Add this
       });
     }
   }, [existingPlan]);
@@ -197,6 +200,7 @@ export default function EditPlanPage() {
                 >
                   <option value="monthly">Monthly</option>
                   <option value="yearly">Yearly</option>
+                  <option value="lifetime">Lifetime</option>
                 </select>
               </div>
               <div>
@@ -277,6 +281,20 @@ export default function EditPlanPage() {
                   Mark as Popular Plan
                 </Label>
               </div>
+            </div>
+
+            {/* Stripe Price ID */}
+            <div>
+              <Label className="flex items-center gap-2">
+                Stripe Price ID
+              </Label>
+              <Input
+                name="priceId"
+                value={form.priceId}
+                onChange={handleChange}
+                placeholder="e.g., price_1OxY2pAbCdEfGhIjKlMn"
+                className="h-12 text-lg border-2"
+              />
             </div>
 
             {/* Submit */}

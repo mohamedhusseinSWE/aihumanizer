@@ -4,20 +4,23 @@ import { PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 
+export type UpdatePlanInput = {
+  name: string;
+  description: string;
+  features: string;
+  price: number;
+  interval: "monthly" | "yearly" | "lifetime"; // <-- Add "lifetime"
+  wordLimitPerRequest: number;
+  wordsPerMonth: number;
+  status: "ACTIVE" | "HIDDEN" | "DISABLED";
+  isPopular: boolean;
+  models: string[];
+  priceId: string; // <-- Add this if missing
+};
+
 export async function updatePlanAction(
   planId: number,
-  data: {
-    name: string;
-    description: string;
-    features: string;
-    price: number;
-    interval: "monthly" | "yearly";
-    wordLimitPerRequest: number;
-    wordsPerMonth: number;
-    status: "ACTIVE" | "HIDDEN" | "DISABLED";
-    isPopular: boolean;
-    models: string[];
-  },
+  data: UpdatePlanInput,
 ) {
   try {
     await prisma.plan.update({
