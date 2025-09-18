@@ -11,7 +11,7 @@ export default function AuthClientPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const router = useRouter();
@@ -47,8 +47,8 @@ export default function AuthClientPage() {
       if (isSignIn) {
         const result = await signIn(email, password, captchaToken);
         if (!result.user) {
-          toast.error(result.error || "Invalid email or password");
-          setError(result.error || "Invalid email or password");
+          toast.error("Invalid email or password");
+          setError("Invalid email or password");
           setIsLoading(false);
           return; // ⬅️ Only navigate if result.user exists!
         }
@@ -91,12 +91,7 @@ export default function AuthClientPage() {
             </p>
           </div>
 
-          {/* Error Display */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
+        
 
           {/* Social Authentication */}
           <div className="space-y-3">
